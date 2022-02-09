@@ -120,3 +120,48 @@ GET
   'accept-language': 'ja,en;q=0.9,en-GB;q=0.8,en-US;q=0.7'
 }
 ```
+
+## Webアプリケーションンに経路を加える
+「経路」は、ある特定のURLへのリクエストに対し、アプリケーションがどうレスポンスすべきかを決める方法の一つです。
+それぞれの、HTTPリクエストを評価して、適切なレスポンスを返す処理を`main.js`に追記して見ます。
+
+```javascript
+const PORT = 3000;
+const HTTP = require("http");
+const APP = HTTP.createServer();
+
+// 経路とレスポンスの対応
+const ROUTER_RES = {
+	"/": "<h1>Hello World</h1>",
+	"/info": "<h1>Info Page</h1>",
+	"/contact": "<h1>Contact Page</h1>",
+};
+
+// リクエストを監視する
+APP.on("request", (req, res) => {
+	if (ROUTER_RES[req.url]) {
+		res.writeHead(200, {
+			"Content-Type": "text/html"
+		});
+		res.end(ROUTER_RES[req.url]);
+	} else {
+		res.writeHead(404, {
+			"Content-Type": "text/html"
+		});
+		res.end("<h1>Not Found</h1>");
+	}
+});
+
+// サーバーを起動
+APP.listen(PORT);
+console.log("server start http://localhost:%d/", PORT);
+```
+以下のコマンドを実行してみます。
+```bash
+node main.js
+```
+```bash
+server start http://localhost:3000/
+```
+Webブラウザーで`http://localhost:3000/`にアクセスしてみて**Hello World**が表示されると思います。
+他のページも確認して無事にプログラムで指定した、レスポンスが返されているか確認してみてください。
